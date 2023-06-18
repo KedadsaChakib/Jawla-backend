@@ -1,6 +1,16 @@
 pool = require("../database.js");
 
-
+async function getLieux() {
+  const connection = await pool.getConnection();
+  try {
+    const [lieux] = await connection.query(
+      "select * from pointinteret p join responsable r on p.idResponsable=r.idResponsable where valide=1"
+    );
+    return lieux;
+  } finally {
+    connection.release();
+  }
+}
 
 
 async function Rechercher(term, category, theme,etatOuverture){
@@ -8,7 +18,10 @@ async function Rechercher(term, category, theme,etatOuverture){
     try {
       console.log("2","'",term,"'", category, theme, etatOuverture);
       if (!term && !category && !theme && !etatOuverture){
-        return [];
+        const [lieux] = await connection.query(
+          "select * from pointinteret where valide=1"
+        );
+        return lieux;
       }
 
       let query = `
@@ -97,4 +110,4 @@ async function Rechercher(term, category, theme,etatOuverture){
 }
 
 
-   module.exports = {Rechercher,Supprimer}
+   module.exports = {Rechercher,Supprimer, getLieux}

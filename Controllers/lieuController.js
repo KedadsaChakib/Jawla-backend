@@ -3,6 +3,16 @@ const lieuService = require("../Services/lieuService.js");
 
 const router = express.Router();
 
+router.get('/', async (req,res,next)=>{
+    try {
+        const result = await lieuService.getLieux();
+        res.status(200).send(result);
+        next();
+      } catch (e) {
+        res.status(500).send(e.message);
+      }
+})
+
 router.delete('/SupprimerLieu/:id',async (req,res,next)=>{
     const id = req.params.id;
     try {
@@ -14,8 +24,9 @@ router.delete('/SupprimerLieu/:id',async (req,res,next)=>{
 })
 
 
-router.get("/RechercheLieu", async (req, res) => {
-    const { term, category, theme, etatOuverture } = req.query;
+router.post("/RechercheLieu", async (req, res) => {
+    const { term, category, theme, etatOuverture } = req.body;
+    console.log(req.body)
     try {
         console.log("1",term,category,theme,etatOuverture);
       const result = await lieuService.Rechercher(term,category,theme,etatOuverture,res);
